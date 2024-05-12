@@ -1,0 +1,110 @@
+2.1.1 Vol Ultimo Mes = 
+VAR vDataMaximaTabela = 
+CALCULATE(
+    MAX(fSACOnline[Data_de_Criacao]),
+    ALL(dCalendario)
+)
+VAR vValorDiaSelecionado = SELECTEDVALUE(dCalendario[Date])
+VAR vSelecaoDemais = 
+IF(
+    SELECTEDVALUE(dOutrosCanalEntrada[CANAL_DE_ENTRADA]) = "DEMAIS CANAIS" || SELECTEDVALUE(dOutrosTipo[TIPO]) = "DEMAIS TIPOS" || SELECTEDVALUE('dOutros5Assuntos/Evento'[EVENTO]) = "DEMAIS ASSUNTOS",
+    BLANK(),
+    "-"
+)
+////////DO MAX DA TABELA
+VAR vUltimoMesTabela = MONTH(vDataMaximaTabela)
+VAR vUltimoAnoTabela = YEAR(vDataMaximaTabela)
+VAR vUltimoDiaTabela = DAY(vDataMaximaTabela)
+////////CONTEXTO
+VAR vDataMaxContexto = MAX(dCalendario[Date])
+VAR vMesMaxContexto = MONTH(vDataMaxContexto)
+VAR vAnoMaxContexto = YEAR(vDataMaxContexto)
+VAR vDiaContexto = DAY(vDataMaxContexto)
+VAR vValidador = IF(vMesMaxContexto == vUltimoMesTabela && vValorDiaSelecionado <> BLANK(), TRUE(),FALSE())
+-------------------------------------------------
+VAR vValidaVolDiaContexto = 
+IF(
+    vSelecaoDemais = BLANK(),
+    "-",
+    IF(
+        vValidador == TRUE(),
+        CALCULATE(
+            [2. Volume Reclamação e Ouvidoria],
+            FILTER(
+                ALL(dCalendario[Date]),
+                dCalendario[Date] = DATE(vAnoMaxContexto,vMesMaxContexto-1,vDiaContexto)
+            )
+        ),
+        BLANK()
+    )
+)
+VAR vResultadoUltimoMesDiferenteJaneiro = 
+IF(
+    vSelecaoDemais = BLANK(),
+    "-",
+    IF(
+        vValidador, 
+        vValidaVolDiaContexto,
+        CALCULATE(
+            [2. Volume Reclamação e Ouvidoria],
+            FILTER(
+                ALL(dCalendario[Date]),
+                dCalendario[Date] >= DATE(vAnoMaxContexto,vMesMaxContexto-1,1) &&
+                dCalendario[Date] <= DATE(vAnoMaxContexto,vMesMaxContexto-1,vUltimoDiaTabela)
+            )
+        )
+    )
+)
+VAR vResultadoUltimoMesIgualJaneiro = 
+IF(
+    vSelecaoDemais = BLANK(),
+    "-",
+    IF(
+        vValidador, 
+        vValidaVolDiaContexto,
+            CALCULATE(
+            [2. Volume Reclamação e Ouvidoria],
+            FILTER(
+                ALL(dCalendario[Date]),
+                dCalendario[Date] >= DATE(vAnoMaxContexto-1,12,1) &&
+                dCalendario[Date] <= DATE(vAnoMaxContexto-1,12,vUltimoDiaTabela/*vDataMaximaTabela*/)
+            )
+        )
+    )
+)
+VAR vResultadoUltimoMes = 
+IF(
+    vSelecaoDemais = BLANK(),
+    "-",
+    IF(
+        vUltimoMesTabela = 1 && vValorDiaSelecionado = BLANK(),
+        vResultadoUltimoMesIgualJaneiro,
+        IF( 
+            vUltimoMesTabela <> 1 && vValorDiaSelecionado = BLANK(),
+            vResultadoUltimoMesDiferenteJaneiro
+        )
+    )
+)
+VAR vMesAnteriorPadrao = 
+CALCULATE(
+    [2. Volume Reclamação e Ouvidoria],
+    DATEADD(dCalendario[Date],-1,MONTH)
+)
+VAR vResultado = 
+IF( HASONEFILTER(dCalendario[mes_ano]),
+    IF( 
+        vMesMaxContexto = vUltimoMesTabela && vAnoMaxContexto = vUltimoAnoTabela,
+        vResultadoUltimoMes,
+        vMesAnteriorPadrao
+    ),
+    BLANK()
+)
+VAR vResultadoFinal = 
+IF ( vValidador == TRUE(), vValidaVolDiaContexto,vResultado) 
+
+RETURN
+IF(
+    vSelecaoDemais = BLANK(),
+    "-",
+    vResultadoFinal
+)
