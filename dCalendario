@@ -1,0 +1,16 @@
+dCalendario = 
+ADDCOLUMNS(
+    CALENDAR(MIN(fTabelaIndice[ANO_MES]),MAX(fTabelaIndice[ANO_MES])),
+    "ano", YEAR([Date]),
+    "mes", MONTH([Date]),
+    "dia", DAY([Date]),
+    "dia_mes", DAY([Date]) &"/"& MONTH([Date]),
+    "mes_txt", UPPER(LEFT(FORMAT([Date],"MMMM"),1)) & MID(FORMAT([Date],"MMMM"),2,15),
+    "ano_mes",YEAR([Date]) & "/" & MONTH([Date]),
+    "mes_ano",MONTH([Date]) & "/" & YEAR([Date]),
+    "mes_txt_ano", UPPER( LEFT(FORMAT([Date],"MMM"),1)) & MID(FORMAT([Date],"MMM"),2,2) & "/" & YEAR([Date]),
+    "semana", WEEKNUM([Date]),
+    "dia_semana", UPPER(LEFT(FORMAT([Date],"dddd"),1)) & MID(FORMAT([Date],"dddd"),2,25),
+    "indice_semana", WEEKDAY([Date],1),
+    "trimestre", "T" & QUARTER([Date])
+)
