@@ -1,0 +1,6 @@
+5 EixoYDinamico = 
+VAR vTabela = ALL(dCalendario[mes],dCalendario[mes_txt])
+VAR vValorMaximo = MAXX(vTabela,[1 ___Indice1000])
+VAR vDeslocamento = 1.7
+RETURN
+vValorMaximo * vDeslocamento
