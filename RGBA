@@ -1,0 +1,9 @@
+7. Menu Formatação Condicional = 
+IF(
+    ISFILTERED(fSACOnline[PRODUTO_FINAL])
+    || ISFILTERED(dCalendario[mes_ano])
+    || ISFILTERED(dCalendario[ano])
+    || ISFILTERED(dCalendario[dia_semana])
+    ,"#FFFFFF",
+    "RGBA(0,0,0,0)"
+)
