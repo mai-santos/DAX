@@ -1,0 +1,13 @@
+1 __Indice1000_AnoMax = 
+VAR vMaxAno = MAX(dCalendario[ano])
+VAR vResultado = 
+CALCULATE(
+    [1 ___Indice1000]
+   ,FILTER(
+       ALL(dCalendario)
+       ,dCalendario[ano] = vMaxAno
+   )
+)
+RETURN
+vResultado
+// FORMAT(vResultado,"0.0000")
