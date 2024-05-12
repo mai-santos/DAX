@@ -1,0 +1,18 @@
+4.1 KPI_VarIndiceYoY = 
+VAR vIndiceAnterior = FORMAT([1 _Indice1000_AnoAnterior],"0.0000")
+VAR vVariacao =
+IF(
+    ISBLANK([1 _Indice1000_AnoAnterior])
+    ,BLANK()
+    ,([1 __Indice1000_AnoMax]/[1 _Indice1000_AnoAnterior])-1
+)
+VAR vVariacaoAjustada = IF(ISBLANK(vVariacao),BLANK(),FORMAT(vVariacao,"+0%;-0%;0%"))
+VAR vIcone = 
+SWITCH(
+    TRUE()
+    ,ISBLANK(vVariacao),BLANK()
+    ,vVariacao <= 0, "✔"
+    ,vVariacao > 0, "⮟"
+)
+RETURN
+vIcone & vVariacaoAjustada
