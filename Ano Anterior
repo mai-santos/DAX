@@ -1,0 +1,13 @@
+1 _Indice1000_AnoAnterior = 
+VAR vAnoMax = MAX(dCalendario[ano])
+VAR vMesMax = MAX(dCalendario[mes])
+VAR vResultado = 
+CALCULATE(
+    [1 ___Indice1000]
+    ,FILTER(
+        ALL(dCalendario)
+        ,dCalendario[ano] = vAnoMax-1 && dCalendario[mes] <= vMesMax
+    )
+)
+RETURN 
+vResultado
