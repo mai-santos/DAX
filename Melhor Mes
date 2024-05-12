@@ -1,0 +1,33 @@
+5 t_SubtituloCard_MelhorMesAno = 
+VAR vMesMaxSelecao = MAX(dCalendario[mes])
+VAR vTabelaMelhorMes_AnosAnteriores = 
+TOPN(
+    1
+    ,ALL(dCalendario[mes],dCalendario[mes_txt])
+    ,[1 ___Indice1000]
+    ,ASC
+)
+VAR vTabelaMelhorMes_AnoCorrente = 
+TOPN(
+    1
+    ,FILTER(
+        ALL(dCalendario[mes],dCalendario[mes_txt])
+        ,dCalendario[mes] <= vMesMaxSelecao
+    )
+    ,[1 ___Indice1000]
+    ,ASC
+)
+VAR vMelhorMes =
+IF(
+    SELECTEDVALUE(dCalendario[ano]) <> YEAR(TODAY())
+    ,MAXX(
+        vTabelaMelhorMes_AnosAnteriores
+        ,dCalendario[mes_txt]
+    )
+    ,MAXX(
+        vTabelaMelhorMes_AnoCorrente
+        ,dCalendario[mes_txt]
+    )
+)
+RETURN
+"(" & vMelhorMes & ") melhor mês"
