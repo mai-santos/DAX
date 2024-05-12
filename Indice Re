@@ -1,0 +1,25 @@
+2 __FormatColor_VarIndice = 
+VAR vAnoAnterior = 
+CALCULATE(
+    [1 ___Indice1000]
+    ,DATEADD(dCalendario[Date],-1,YEAR)
+)
+VAR vVariacaoYoY = 
+([1 ___Indice1000]/vAnoAnterior)-1
+VAR vPorcentagem = [4.1.1 Valor_VarIndiceYoY]
+VAR vVariacao =
+IF(
+    ISBLANK(vAnoAnterior)
+    ,BLANK()
+    ,vVariacaoYoY
+)
+VAR vPorcentagemAjustada = FORMAT(vPorcentagem,"⮟+ 0.0%;⮝- 0.0%;0%")
+VAR vResultado = 
+SWITCH(
+    TRUE()
+    ,ISBLANK(vAnoAnterior) ,"#605E5C" // CINZA
+    ,vVariacaoYoY > 0 ,"#C22219" // VERMELHO
+    ,vVariacaoYoY < 0 , "#008000" // VERDE
+)
+RETURN
+vResultado
