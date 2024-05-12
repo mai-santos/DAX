@@ -1,0 +1,22 @@
+5 t_CardAviso_PeriodoConsiderado = 
+VAR vMaxAno = MAX(dCalendario[ano])
+VAR vMesMax = 
+CALCULATE(
+    MAX(dCalendario[mes])
+    ,FILTER(
+        ALL(dCalendario)
+        ,dCalendario[ano] = vMaxAno
+    )
+    ,REMOVEFILTERS(dCalendario[ano])
+)
+VAR vMesMin = 
+CALCULATE(
+    MIN(dCalendario[mes])
+    ,FILTER(
+        ALL(dCalendario)
+        ,dCalendario[ano] = vMaxAno
+    )
+    ,REMOVEFILTERS(dCalendario[ano])
+)
+RETURN
+"Período Considerado: " & vMesMin & "/" & vMaxAno & " a " & vMesMax & "/" & vMaxAno
