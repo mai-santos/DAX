@@ -1,0 +1,70 @@
+1 VarPerda_MoM = 
+//////////////////////////////////// RESULTADO EM DIAS PROPORCIONAIS AO MES EM CURSO ////////////////////////////////////
+VAR vDataMaximaTabela = CALCULATE(MAX(fExtratoDiarioTmp[DAT_POSTAGEM]),ALL(dCalendario))
+////////DO MAX DA TABELA
+VAR vUltimoMesTabela = MONTH(vDataMaximaTabela)
+VAR vUltimoAnoTabela = YEAR(vDataMaximaTabela)
+VAR vUltimoDiaTabela = DAY(vDataMaximaTabela)
+////////CONTEXTO
+VAR vDataMaxContexto = MAX(dCalendario[Date])
+VAR vMesMaxContexto = MONTH(vDataMaxContexto)
+VAR vAnoMaxContexto = YEAR(vDataMaxContexto)
+-------------------------------------------------
+VAR vResultadoUltimoMesDiferenteJaneiro = 
+IF(
+    ISBLANK([G SomaPERDA_VLR])
+    ,BLANK()
+    ,CALCULATE(
+        [G SomaPERDA_VLR],
+        FILTER(
+            ALL(dCalendario[Date]),
+            dCalendario[Date] >= DATE(vAnoMaxContexto,vMesMaxContexto-1,1) &&
+            dCalendario[Date] <= DATE(vAnoMaxContexto,vMesMaxContexto-1,vUltimoDiaTabela)
+        )
+    )
+)
+VAR vResultadoUltimoMesIgualJaneiro = 
+IF(
+    ISBLANK([G SomaPERDA_VLR])
+    ,BLANK()
+    ,CALCULATE(
+        [G SomaPERDA_VLR],
+        FILTER(
+            ALL(dCalendario[Date]),
+            dCalendario[Date] >= DATE(vAnoMaxContexto-1,12,1) &&
+            dCalendario[Date] <= DATE(vAnoMaxContexto-1,12,vUltimoDiaTabela)
+        )
+    )
+)
+VAR vResultadoUltimoMes = 
+IF(
+    vUltimoMesTabela = 1
+    ,vResultadoUltimoMesIgualJaneiro
+    ,vResultadoUltimoMesDiferenteJaneiro
+)
+VAR vMesAnteriorPadrao = 
+IF(
+    ISBLANK([G SomaPERDA_VLR])
+    ,BLANK()
+    ,CALCULATE(
+        [G SomaPERDA_VLR],
+        DATEADD(dCalendario[Date],-1,MONTH)
+    )
+)
+VAR vResultadoFinal = 
+IF(
+    vMesMaxContexto = vUltimoMesTabela && vAnoMaxContexto = vUltimoAnoTabela
+    ,vResultadoUltimoMes
+    ,vMesAnteriorPadrao
+)
+////////////////////////////////////////////
+VAR vMesAnterior = vResultadoFinal
+VAR vMesAtual = [G SomaPERDA_VLR]
+Var vVariacao = 
+IF(
+    ISBLANK(vMesAnterior) || ISBLANK(vMesAtual)
+    ,BLANK()
+    ,DIVIDE(vMesAtual,vMesAnterior,BLANK())-1
+)
+RETURN
+vVariacao
