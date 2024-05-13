@@ -1,0 +1,1 @@
+tAtualização = "Atualizado em : " & SELECTEDVALUE('Atualização'[Data e Hora (Ajuste PBI Serviço)])
