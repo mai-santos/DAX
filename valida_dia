@@ -1,0 +1,21 @@
+valida_dia = 
+VAR vDataMaxTabela = MAX(fExtratoDiarioTmp[DAT_POSTAGEM])
+VAR vTabelaSegundas = 
+CALCULATETABLE(
+    VALUES(dCalendario[Date])
+    ,dCalendario[indice_semana] = 1 && dCalendario[Date] <= vDataMaxTabela
+)
+VAR vDiaLinha = CALCULATE(MAX(dCalendario[Date]))
+VAR vIndiceSemana = CALCULATE(MAX(dCalendario[indice_semana]))
+VAR vResultado = 
+IF(
+    vDiaLinha < LASTDATE(vTabelaSegundas)
+    ,0
+    ,IF(
+        vIndiceSemana = 6 || vIndiceSemana = 7
+        ,0
+        ,1
+    )
+)
+RETURN
+vResultado
