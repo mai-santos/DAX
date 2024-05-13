@@ -1,0 +1,79 @@
+A.A WoWeYoY_DISPUTA_CLIENTES = 
+VAR vConfereSelecaoAno = ISFILTERED(dCalendario[ano])
+/////////////////////////////////////////////// RACIONAIS WoW ///////////////////////////////////////////////
+VAR vHoje = TODAY()
+VAR vSegundaAtual = IF(WEEKDAY(vHoje) = 2, vHoje, vHoje - WEEKDAY(vHoje) + 2)
+VAR vSegundaSemanaAnterior = vSegundaAtual - 7
+VAR vSextaSemanaAnterior = vSegundaSemanaAnterior + 4
+VAR vSegundaPenultimaSemana = vSegundaSemanaAnterior - 7
+VAR vSextaPenultima = vSegundaPenultimaSemana + 4
+//////////////////////////// RESULTADO WoW DE ACORDO COM AS DATAS DA SEMANA PARCIAL
+VAR vPeriodoParcial = vHoje-8  -- retorna a data da semana anterior respeitando dia da semana atual (ex terça atual, terça passada)
+VAR vSemanaParcial =  -- retorna o resultado de acordo com os mesmos dias da semana
+CALCULATE(
+    [A SomaDISPUTA_CLIENTES]
+    ,FILTER(
+        ALL(dCalendario)
+        ,dCalendario[Date] >= vSegundaSemanaAnterior && dCalendario[Date] <= vPeriodoParcial
+    )
+)
+//////// PENULTIMA SEMANA COMPLETA -- quando hoje for segunda, retornará seg a sex da penultima semana
+VAR vPenultimaSemanaCompleta = 
+CALCULATE(
+    [A SomaDISPUTA_CLIENTES]
+    ,FILTER(
+        ALL(dCalendario)
+        ,dCalendario[Date] >= vSegundaPenultimaSemana && dCalendario[Date] <= vSextaPenultima
+    )
+)
+//////// RESULTADO FINAL SEMANA
+VAR vResultadoSemana = 
+IF(
+    WEEKDAY(vHoje)<>2
+    ,vSemanaParcial
+    ,vPenultimaSemanaCompleta
+)
+/////////////////////////////////////////////// RACIONAIS YoY ///////////////////////////////////////////////
+VAR vDataMaxFato = CALCULATE(MAX(fExtratoDiarioTmp[DAT_POSTAGEM]),ALL(fExtratoDiarioTmp))
+VAR vAnoSelecionado = SELECTEDVALUE(dCalendario[ano])
+// //////// MAX TABELA
+VAR vUltimoAnoFato = YEAR(vDataMaxFato)
+VAR vUltimoDiaFato = DAY(vDataMaxFato)
+//////// MAX CONTEXTO
+VAR vUltimaDataContexto = MAX(dCalendario[Date])
+VAR vUltimoMesContexto = MONTH(vUltimaDataContexto)
+VAR vUltimoAnoContexto = YEAR(vUltimaDataContexto)
+VAR vUltimoDiaContexto = DAY(vUltimaDataContexto)
+//////// MIN CONTEXTO
+VAR vPrimeiraDataContexto = MIN(dCalendario[Date])
+VAR vPrimeiroMesContexto = MONTH(vPrimeiraDataContexto)
+VAR vPrimeiroDiaContexto = DAY(vPrimeiraDataContexto)
+//////////////////////////// RESULTADO YoY PARCIAL QUANDO ANO SELECIONADO FOR ANO EM CURSO
+VAR vResultadoAnoAnterioraoUltimoAnoFato = 
+CALCULATE(
+    [A SomaDISPUTA_CLIENTES]
+    ,FILTER(
+        ALL(dCalendario)
+        ,dCalendario[Date] >= DATE(vUltimoAnoContexto-1,vPrimeiroMesContexto,vPrimeiroDiaContexto) &&
+        dCalendario[Date] <= DATE(vUltimoAnoContexto-1,vUltimoMesContexto,vUltimoDiaContexto)
+    )
+)
+//////////////////////////// RESULTADO YoY DE DOS ANOS COMPLETOS
+VAR vResultadoAnoCompleto = 
+CALCULATE(
+    [A SomaDISPUTA_CLIENTES]
+    ,DATEADD(dCalendario[Date],-1,YEAR)
+)
+-------- CHECA SE O ANO SELECIONADO É ANO EM CURSO
+VAR vResuldadoAno =
+IF(
+    vAnoSelecionado = vUltimoAnoFato
+    ,vResultadoAnoAnterioraoUltimoAnoFato
+    ,vResultadoAnoCompleto
+)
+RETURN
+IF(
+    vConfereSelecaoAno
+    ,vResuldadoAno
+    ,vResultadoSemana
+)
