@@ -1,0 +1,24 @@
+1.1 Ranking V2 = 
+VAR vTopN = 'TopN Evento'[Valor TopN Evento]
+VAR vRank = 
+RANKX(
+    ALL(dEventoOutros[EVENTO]),
+    CALCULATE(
+            [2. Volume Reclamação e Ouvidoria],
+            ALLSELECTED(dCalendario[mes_ano],dCalendario[mes])
+    )
+)
+RETURN
+IF(
+    ISINSCOPE(dEventoOutros[EVENTO]),
+    IF(
+        (SELECTEDVALUE('Top Eventos'[Value]) = "TOP ASSUNTOS" && vRank <= vTopN )||
+        (SELECTEDVALUE('Top Eventos'[Value]) = "DEMAIS ASSUNTOS" && vRank > vTopN),
+        vRank
+    ),
+    IF(
+        SELECTEDVALUE('Top Eventos'[Value]) = "TOP ASSUNTOS",
+        1,
+        2
+    )
+)
