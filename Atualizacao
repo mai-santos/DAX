@@ -1,0 +1,9 @@
+let
+    Fonte = DateTimeZone.LocalNow(),
+    #"Convertido para Tabela" = #table(1, {{Fonte}}),
+    #"Colunas Renomeadas" = Table.RenameColumns(#"Convertido para Tabela",{{"Column1", "Data e Hora"}}),
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Colunas Renomeadas",{{"Data e Hora", type datetimezone}}),
+    #"Personalização Adicionada" = Table.AddColumn(#"Tipo Alterado", "Data e Hora (Ajuste PBI Serviço)", each DateTimeZone.SwitchZone([Data e Hora],-3)),
+    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Personalização Adicionada",{{"Data e Hora (Ajuste PBI Serviço)", type datetimezone}})
+in
+    #"Tipo Alterado1"
