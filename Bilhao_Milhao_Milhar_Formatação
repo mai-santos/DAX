@@ -1,0 +1,8 @@
+	"""" & SWITCH(
+			TRUE()
+			,SELECTEDMEASURE() >= 1E+09, FORMAT(SELECTEDMEASURE(),"R$ #,0,,,.0 Bi")
+			,SELECTEDMEASURE() >= 1E+06, FORMAT(SELECTEDMEASURE(),"R$ #,0,,.0 Mi")
+			,SELECTEDMEASURE() >= 1E+03, FORMAT(SELECTEDMEASURE(),"R$ #,0,.0 K")
+			,FORMAT(SELECTEDMEASURE(),"R$ #")
+			)& """"
+    /// formato dinâmico no Power BI
