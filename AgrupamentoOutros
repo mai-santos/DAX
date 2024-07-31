@@ -1,0 +1,26 @@
+# Quantidade_Outros = 
+VAR _Bottom = 6
+VAR _TabelaBottom = 
+TOPN(
+    _Bottom
+    ,ALL(dOutrosProduto[qtd_prod_cliente])
+    ,[1. QTD_clientes_geral]
+    ,DESC
+)
+VAR _QtdeClientesBottom = 
+CALCULATE(
+    [1. QTD_clientes_geral]
+    ,KEEPFILTERS(_TabelaBottom)
+)
+VAR _Outros = EXCEPT(ALL(dOutrosProduto[qtd_prod_cliente]),_TabelaBottom)
+VAR _QtdeOutros = 
+CALCULATE(
+    [1. QTD_clientes_geral]
+    ,_Outros
+)
+RETURN 
+IF(
+    SELECTEDVALUE(dOutrosProduto[qtd_prod_cliente]) = "Outros"
+    , _QtdeOutros
+    ,_QtdeClientesBottom
+)
