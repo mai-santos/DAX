@@ -1,0 +1,8 @@
+IF(
+    COUNTX(
+        FILTER(SuaTabela, SuaTabela[concat] = EARLIER(SuaTabela[concat])),
+        SuaTabela[concat]
+    ) > 1,
+    1,
+    0
+)
