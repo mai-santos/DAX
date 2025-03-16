@@ -1,0 +1,31 @@
+periodo_equivalente_LM = 
+VAR _TemLinha = CALCULATE(COUNTROWS(fBaseSeguro), REMOVEFILTERS(fBaseSeguro[nam_product]))
+RETURN
+IF(
+    _TemLinha > 0
+    ,
+    VAR _UltimaDataContexto = MAX(dCalendario[Data])
+    VAR _DiaSelecionado = DAY(_UltimaDataContexto)
+    VAR _FimMesContexto = EOMONTH(_UltimaDataContexto, 0)
+    VAR _FimMesAnterior = EOMONTH(_UltimaDataContexto, -1)
+    VAR _InicioMesAnterior = EOMONTH(_UltimaDataContexto, -2) + 1
+    VAR _FimPeriodoComparacao =
+        IF(
+            _UltimaDataContexto = _FimMesContexto,
+            _FimMesAnterior,
+            -- Considera a quantidade minima de dias (caso o mes seja 28,29 ou 30 dias)
+            MIN(
+                _InicioMesAnterior + (_DiaSelecionado - 1),
+                _FimMesAnterior
+            )
+        )
+    RETURN
+    CALCULATE(
+        [2.0 (%) Aceito x Envios Escopo],
+        FILTER(
+            ALL(dCalendario),
+            dCalendario[Data] >= _InicioMesAnterior &&
+            dCalendario[Data] <= _FimPeriodoComparacao
+        )
+    )
+)
