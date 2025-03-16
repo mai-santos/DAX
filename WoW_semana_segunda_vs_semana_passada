@@ -1,0 +1,39 @@
+3. WoW Cap. Bruta = 
+VAR _DataMaxContexto = MAX(dCalendario[Data])
+VAR _DataMaxTabela = CALCULATE(MAX(dCalendario[Data]),ALL(dCalendario))
+VAR _SemanaIndiceContexto = SELECTEDVALUE(dCalendario[SemanaIndice])
+VAR _SemanaIndiceAtual = CALCULATE(MAX(dCalendario[SemanaIndice]),ALL(dCalendario))
+VAR _SemanaAtualResultado = [A.1.2 Captacao Slide Week]
+VAR _HojeSegunda = WEEKDAY(TODAY())
+VAR _SemanaPassadaResultado = 
+CALCULATE(
+    [A.1.2 Captacao Slide Week]
+    ,FILTER(
+        ALL(dCalendario)
+        ,dCalendario[SemanaIndice] = _SemanaIndiceContexto-1
+    )
+)
+// ###### RESULTADO SEMANA COMPLETA
+VAR _MoMSemanaCompleta = IF(ISBLANK(_SemanaAtualResultado) || ISBLANK(_SemanaPassadaResultado),BLANK(),DIVIDE(_SemanaAtualResultado - _SemanaPassadaResultado, _SemanaPassadaResultado,BLANK()))
+// ###### RESULTADO SEMANA PARCIAL
+VAR _DataSegundaAnterior = (WEEKDAY(_DataMaxTabela)+5)*-1
+VAR _SemanaPassadaParcial = 
+CALCULATE(
+    [Captação Bruta]
+    ,FILTER(
+        ALL(dCalendario)
+        , dCalendario[SemanaIndice] = _SemanaIndiceAtual -1 &&
+         ( dCalendario[Data] >= _DataSegundaAnterior && dCalendario[Data] <= _DataMaxTabela-7)
+    )
+)
+VAR _MoMSemanaParcial = IF(ISBLANK(_SemanaAtualResultado) || ISBLANK(_SemanaPassadaParcial),BLANK(),DIVIDE(_SemanaAtualResultado - _SemanaPassadaParcial, _SemanaPassadaParcial,BLANK()))
+RETURN 
+IF(
+    _HojeSegunda = 2
+    , FORMAT(_MoMSemanaCompleta,"🢁 +0.0%;  🢃 -0.0%; -") 
+    ,IF(
+        SELECTEDVALUE(dCalendario[SemanaIndice]) = _SemanaIndiceAtual
+        ,FORMAT(_MoMSemanaParcial,"🢁 +0.0%;  🢃 -0.0%; -")
+        ,FORMAT(_MoMSemanaCompleta,"🢁 +0.0%;  🢃 -0.0%; -") 
+    )
+)
