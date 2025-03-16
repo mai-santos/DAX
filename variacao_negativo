@@ -1,0 +1,8 @@
+IF(
+    ISBLANK(_SemanaAtualResultado) || ISBLANK(_SemanaPassadaResultado),BLANK()
+    ,IF(
+        _SemanaPassadaResultado < 0,
+        FORMAT(((_SemanaAtualResultado - _SemanaPassadaResultado) / ABS(_SemanaPassadaResultado)), "🢁 +0.00%; 🢃 -0.00%; "),
+        FORMAT(((_SemanaAtualResultado - _SemanaPassadaResultado) / _SemanaPassadaResultado), "🢁 +0.00%; 🢃 -0.00%; ")
+    )
+)
