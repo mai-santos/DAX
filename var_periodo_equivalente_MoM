@@ -1,0 +1,16 @@
+0.1 PIX_Pendente = 
+////  Variavel utilizada para trazer os dados de acordo com a hierarquia considerando apenas os executivos ativos no periodo selecionado. 
+VAR _TemLinha = CALCULATE(COUNTROWS(dHierarquia), REMOVEFILTERS(fBaseSeguro[nam_product]))
+RETURN
+IF(
+    _TemLinha > 0
+    ,
+    COALESCE(
+        CALCULATE(
+            [0 Envios]
+            ,fBaseSeguro[status_opt_in] = "Pendente"
+            ,fBaseSeguro[nam_product] = "PIX"
+        )
+        ,0
+    )
+)
