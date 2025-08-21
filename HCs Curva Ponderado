@@ -1,0 +1,39 @@
+3.1.2 HCs Curva B Indicadores = 
+SUMX(
+    VALUES(dHierarquia[assessor]),
+    CALCULATE(
+        VAR _Indicador = MAX( dIndicadores[Indicador] )
+        VAR _CapBruta       = [1.1 (%) Atingimento Cap Bruta]
+        VAR _CapLiquida     = [1.1 (%) Atingimento Cap Liquida]
+        VAR _Diversificacao = [1.1 (%) Atingimento Diversificacao]
+        VAR _CartaoMultiplo = [1.1 (%) Atingimento Cartao Multiplo]
+        VAR _ContaPagBank   = [1.1 (%) Atingimento Conta PagBank]
+        VAR _Empresarial    = [1.1 (%) Atingimento Empresarial]
+        VAR _CPC            = [1.1 (%) Atingimento CPC]
+        VAR _Monitoria      = [1.1 (%) Atingimento Monitoria]
+        VAR _SelecaoArea    = MAX(dHierarquia[area_visuais])
+        
+        VAR _Resultado =
+            SWITCH(
+                TRUE()
+                , _Indicador = "Cap Bruta" && _SelecaoArea in {"Conquest","Consumer I","Consumer II","Consumer High"}, _CapBruta >= 1 && _CapBruta < 1.5
+                // , _Indicador = "Cap Bruta", _CapBruta >= 1 && _CapBruta < 1.5
+                , _Indicador = "Cap Líquida" && _SelecaoArea in {"Empresas","Varejo I","Varejo II","Varejo III"}, _CapLiquida >= 1 && _CapLiquida < 1.5 
+                // , _Indicador = "Cap Líquida", _CapLiquida >= 1 && _CapLiquida < 1.5     
+                , _Indicador = "Diversificação", _Diversificacao >= 1 && _Diversificacao < 1.5      
+                , _Indicador = "Cartão Múltiplo", _CartaoMultiplo >= 1 && _CartaoMultiplo < 1.5      
+                , _Indicador = "Seguro Conta PagBank" && _SelecaoArea <> "Empresas", _ContaPagBank >= 1 && _ContaPagBank < 1.5      
+                , _Indicador = "Seguro Empresarial" && _SelecaoArea in {"Empresas","Varejo I","Varejo II","Varejo III"}, _Empresarial >= 1 && _Empresarial < 1.5 
+                , _Indicador = "CPC", _CPC >= 1 && _CPC < 1.5      
+                , _Indicador = "Monitoria", _Monitoria >= 1 && _Monitoria < 1.5      
+                , FALSE()
+            )
+        
+        RETURN
+            IF( _Resultado, 1, BLANK() )
+        ,
+        KEEPFILTERS( TREATAS( { [assessor] }, dHierarquia[assessor] ) )
+    )
+)
+
+// "QQQQQQQQ"
