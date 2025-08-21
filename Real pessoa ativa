@@ -1,0 +1,17 @@
+0.1 Realizado Cap Bruta = 
+VAR _TemLinha = // Variavel visa carregar os dados apenas para assessores ativos no periodo.
+CALCULATE(
+    COUNTROWS(dHierarquia)
+)
+RETURN
+IF(
+    _TemLinha > 0 
+    ,
+    COALESCE(
+        CALCULATE(
+            SUM(fConsolidado[resultado])
+            , fConsolidado[indicador] = "Cap Bruta"
+        )
+        ,0
+    )
+)
