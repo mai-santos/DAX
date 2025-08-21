@@ -1,0 +1,9 @@
+! Saudação = 
+VAR _Usuario = 
+CALCULATE(
+    MAX(dUsuarios[nome_sobrenome])
+    ,dUsuarios[email] = USERPRINCIPALNAME()
+    )
+VAR _Hora = HOUR(NOW())-3
+RETURN
+"Olá" & IF(ISBLANK(_Usuario), BLANK() & "!",", ") & _Usuario & "! " & IF(_Hora < 12,"Bom dia!",IF(_Hora < 18,"Boa Tarde!","Boa Noite!"))
