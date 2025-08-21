@@ -1,0 +1,46 @@
+0.2 Realizado LM Dispersao = 
+// variavel visa carregar os dados apenas para assessores ativos no periodo.
+VAR _TemLinha = 
+CALCULATE(
+    COUNTROWS(dHierarquia)
+)
+RETURN
+IF(
+    _TemLinha > 0
+    ,
+    VAR _SelecaoIndicador = SELECTEDVALUE('auxIndicadoresDispersao'[Indicadores Dispersao Pedido])
+    VAR _UltimaDataContexto = MAX(dCalendario[Data])
+    VAR _DiaSelecionado = DAY(_UltimaDataContexto)
+    VAR _FimMesContexto = EOMONTH(_UltimaDataContexto, 0)
+    VAR _FimMesAnterior = EOMONTH(_UltimaDataContexto, -1)
+    VAR _InicioMesAnterior = EOMONTH(_UltimaDataContexto, -2) + 1
+    VAR _FimPeriodoComparacao =
+        IF(
+            _UltimaDataContexto = _FimMesContexto,
+            _FimMesAnterior,
+            -- Considera a quantidade minima de dias (caso o mes seja 28,29 ou 30 dias)
+            MIN(
+                _InicioMesAnterior + (_DiaSelecionado - 1),
+                _FimMesAnterior
+            )
+        )
+    RETURN
+    CALCULATE(
+        SWITCH(
+            _SelecaoIndicador
+            , 0, [0.1 Realizado Cap Bruta]
+            , 1, [0.1 Realizado Cap Liquida]
+            , 2, [0.1 Realizado Cartao Multiplo]
+            , 5, [0.1 Realizado Diversificacao]
+            , 3, [0.1 Realizado Conta PagBank]
+            , 6, [0.1 Realizado Empresarial]
+            , 4, [0.1 Realizado CPC]
+            , 7, [0.1 Realizado Monitoria]
+        ),
+        FILTER(
+            ALL(dCalendario),
+            dCalendario[Data] >= _InicioMesAnterior &&
+            dCalendario[Data] <= _FimPeriodoComparacao
+        )
+    )
+)
