@@ -1,0 +1,8 @@
+IF(
+    COUNTX(
+        FILTER(fIndice, fIndice[id_cliente] = EARLIER(fIndice[id_cliente])),
+        fIndice[id_cliente]
+    ) > 1,
+    1,
+    0
+)
