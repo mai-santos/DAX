@@ -1,0 +1,5 @@
+Rank Canal Entrada = 
+RANKX(
+  ALLSELECTED(dOutrosCanalEntrada[Canal_de_entrada])
+    ,[2. Volume Reclamação e Ouvidoria]
+)
