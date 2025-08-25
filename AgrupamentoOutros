@@ -1,5 +1,6 @@
 # Quantidade_Outros = 
-VAR _Bottom = 6
+// medida agrupa (top/bottom) de rankings. de modo que numa matriz as categorias restantes fiquem acumuladas numa linha de Outros
+VAR _Bottom = 6 // pode ser substituída por parâmetro de campos
 VAR _TabelaBottom = 
 TOPN(
     _Bottom
